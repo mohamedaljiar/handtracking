@@ -35,7 +35,30 @@ while True:
             elif hand["type"] == "Left":
                 real_right = hand
                 
-            
+            # Constants for configuration (usually at the top of your script)
+TEXT_COLOR_GREEN = (0, 255, 0)
+FONT_SCALE = 2
+THICKNESS = 3
+AUTO_MODE_TRIGGER = [0, 1, 1, 0, 0] # Index and Middle fingers up
+
+def set_auto_mode(img, serial_connection):
+    """Activates ultrasonic auto mode and updates UI."""
+    cv2.putText(
+        img, 
+        "AUTO MODE (Ultrasonic)", 
+        (50, 50),
+        cv2.FONT_HERSHEY_PLAIN, 
+        FONT_SCALE, 
+        TEXT_COLOR_GREEN, 
+        THICKNESS
+    )
+    
+    if serial_connection:
+        serial_connection.write(b'A')
+
+# Implementation inside your main loop
+if fingers == AUTO_MODE_TRIGGER:
+    set_auto_mode(img, ser)
 
         hand1 = real_right if real_right else real_left
         centerPoint1 = hand1["center"]
