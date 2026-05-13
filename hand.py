@@ -46,48 +46,78 @@ while True:
                         cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 3)
             if ser:
                 ser.write(b'A')
-#this coommit by ahmed awad awad 
-        elif len(hands) == 2 and real_right and real_left:
-            hand2 = real_left
-            centerPoint2 = hand2["center"]
-            length, info, img = detector.findDistance(centerPoint1, centerPoint2, img)
+#this coommit by ahmed awad awad cv2.destroyAllWindows()
+def send_command(command):
+    if ser:
+        ser.write(command)
 
-            cv2.circle(img, (info[4], info[5]), int(length) // 2, (100, 100, 30), 5)
 
-            righty = info[3]
-            lefty  = info[1]
+def draw_text(img, text):
+    cv2.putText(
+        img, text, (50, 50),
+        cv2.FONT_HERSHEY_PLAIN, 2,
+        (0, 0, 255), 4
+    )
 
-            if lefty - 30 <= righty <= lefty + 30:
-                cv2.putText(img, "Move Forward", (50, 50),
-                            cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 4)
-                if ser:
-                    ser.write(b'F')
 
-            elif lefty >= righty + 31:
-                cv2.putText(img, "Move Right", (50, 50),
-                            cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 4)
-                if ser:
-                    ser.write(b'R')
+def handle_two_hands(img, detector, centerPoint1, real_left):
+    centerPoint2 = real_left["center"]
 
-            elif lefty <= righty - 31:
-                cv2.putText(img, "Move Left", (50, 50),
-                            cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 4)
-                if ser:
-                    ser.write(b'L')
+    length, info, img = detector.findDistance(centerPoint1, centerPoint2, img)
 
-        else:
-            cv2.putText(img, "Stop", (50, 50),
-                        cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 4)
-            if ser:
-                ser.write(b'S')
+    mid_x, mid_y = info[4], info[5]
+    cv2.circle(img, (mid_x, mid_y), int(length) // 2, (100, 100, 30), 5)
+
+    right_y = info[3]
+    left_y = info[1]
+
+    return img, left_y, right_y
+
+
+def decide_movement(img, left_y, right_y):
+    threshold = 30
+
+    if abs(left_y - right_y) <= threshold:
+        draw_text(img, "Move Forward")
+        send_command(b'F')
+
+    elif left_y > right_y + threshold:
+        draw_text(img, "Move Right")
+        send_command(b'R')
+
+    elif left_y < right_y - threshold:
+        draw_text(img, "Move Left")
+        send_command(b'L')
+        
+while True:
+    success, img = cap.read()
+    hands, img = detector.findHands(img)
+
+    real_right = None
+    real_left = None
+
+    if hands:
+        for hand in hands:
+            if hand["type"] == "Right":
+                real_right = hand
+            elif hand["type"] == "Left":
+                real_left = hand
+
+    if len(hands) == 2 and real_right and real_left:
+        centerPoint1 = real_right["center"]
+
+        img, left_y, right_y = handle_two_hands(
+            img, detector, centerPoint1, real_left
+        )
+
+        decide_movement(img, left_y, right_y)
 
     else:
-        cv2.putText(img, "Stop", (50, 50),
-                    cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 4)
-        if ser:
-            ser.write(b'S')
+        draw_text(img, "Stop")
+        send_command(b'S')
 
     cv2.imshow("Hand Control Robot", img)
+
     if cv2.waitKey(1) == ord('q'):
         break
 
