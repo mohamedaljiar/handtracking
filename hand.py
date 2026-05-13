@@ -41,11 +41,11 @@ while True:
         centerPoint1 = hand1["center"]
         fingers = detector.fingersUp(hand1)
 
-    # Constants for configuration (usually at the top of your script)
+    # commit by youssef saad
 TEXT_COLOR_GREEN = (0, 255, 0)
 FONT_SCALE = 2
 THICKNESS = 3
-AUTO_MODE_TRIGGER = [0, 1, 1, 0, 0] # Index and Middle fingers up
+AUTO_MODE_TRIGGER = [0, 1, 1, 0, 0] 
 
 def set_auto_mode(img, serial_connection):
     """Activates ultrasonic auto mode and updates UI."""
@@ -62,7 +62,6 @@ def set_auto_mode(img, serial_connection):
     if serial_connection:
         serial_connection.write(b'A')
 
-# Implementation inside your main loop
 if fingers == AUTO_MODE_TRIGGER:
     set_auto_mode(img, ser)
 
