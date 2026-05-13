@@ -46,7 +46,7 @@ while True:
                         cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 3)
             if ser:
                 ser.write(b'A')
-
+#this part by ahmed awad awad 
         elif len(hands) == 2 and real_right and real_left:
             hand2 = real_left
             centerPoint2 = hand2["center"]
@@ -93,3 +93,4 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
+#end of the part and project
