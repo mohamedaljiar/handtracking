@@ -16,29 +16,31 @@ except Exception:
 detector = HandDetector(detectionCon=0.8, maxHands=1)
 
 
-cap = cv2.VideoCapture(0)
+ in cap = cv2.VideoCapture(0)
 detector = HandDetector(detectionCon=0.8, maxHands=2)
 
 while True:
     success, img = cap.read()
     if not success:
         break
+#commit by ahmed hamada
+import cv2
+from cvzone.HandTrackingModule import HandDetector
 
-    img = cv2.flip(img, 1)
-    hands, img = detector.findHands(img)
+cap, det = cv2.VideoCapture(0), HandDetector(detectionCon=0.8, maxHands=2)
+
+while True:
+     img = cap.read()
+    hands, img = det.findHands(cv2.flip(img), flipType=False)
 
     if hands:
-        real_right = None
-        real_left = None
+         One-liner to extract left and right hands
+        h_dict = {h['type']: h for h in hands}
+        left, right = h_dict.get('Left'), h_dict.get('Right')
 
-        for hand in hands:
-            
-            
-            if hand["type"] == "Right":
-                real_left = hand
-                
-            elif hand["type"] == "Left":
-                real_right = hand
+    cv2.imshow("HandTrack", img)
+    if cv2.waitKey(1) == ord('q'): break
+   
                 
             
 
