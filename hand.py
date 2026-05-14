@@ -1,21 +1,15 @@
-# commit by ahmed ehab
 import cv2
+from cvzone.HandTrackingModule
+import HandDetector
 import serial
-from cvzone.HandTrackingModule import HandDetector
-
-PORT = "/dev/tty.HC-05-SerialPort"
 
 try:
-    ser = serial.Serial(PORT, 9600, timeout=1)
-    ser.flush()
+    ser = serial.Serial("/dev/tty.HC-05-SerialPort", 9600)
+    ser.flushInput()
     print("Robot Connected!")
-except Exception:
+except:
+    print("Robot not found, running in Debug Mode.")
     ser = None
-    print("Running in Debug Mode (Robot not found).")
-
-detector = HandDetector(detectionCon=0.8, maxHands=1)
-
-
 cap = cv2.VideoCapture(0)
 detector = HandDetector(detectionCon=0.8, maxHands=2)
 
